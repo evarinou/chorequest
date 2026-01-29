@@ -31,7 +31,7 @@ services:
       CHOREQUEST_HA_WEBHOOK_ID: ${CHOREQUEST_HA_WEBHOOK_ID:-}
       CHOREQUEST_DEBUG: ${CHOREQUEST_DEBUG:-false}
     ports:
-      - "8001:8000"
+      - "8007:8000"
 
   frontend:
     build: ./frontend
@@ -40,9 +40,9 @@ services:
       - backend
     environment:
       PUBLIC_API_URL: http://backend:8000
-      ORIGIN: http://localhost:3001
+      ORIGIN: http://localhost:3007
     ports:
-      - "3001:3000"
+      - "3007:3000"
 
 volumes:
   pgdata:
