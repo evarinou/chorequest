@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chorequest
+      POSTGRES_PASSWORD: ${CHOREQUEST_DB_PASSWORD:-chorequest}
+      POSTGRES_DB: chorequest
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chorequest"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      CHOREQUEST_DATABASE_URL: postgresql+asyncpg://chorequest:${CHOREQUEST_DB_PASSWORD:-chorequest}@db:5432/chorequest
+      CHOREQUEST_API_KEY: ${CHOREQUEST_API_KEY:-changeme}
+      CHOREQUEST_CLAUDE_API_KEY: ${CHOREQUEST_CLAUDE_API_KEY:-}
+      CHOREQUEST_HA_URL: ${CHOREQUEST_HA_URL:-}
+      CHOREQUEST_HA_WEBHOOK_ID: ${CHOREQUEST_HA_WEBHOOK_ID:-}
+      CHOREQUEST_DEBUG: ${CHOREQUEST_DEBUG:-false}
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      PUBLIC_API_URL: http://backend:8000
+      ORIGIN: http://localhost:3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

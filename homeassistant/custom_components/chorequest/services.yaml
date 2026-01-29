@@ -1,0 +1,34 @@
+complete_task:
+  name: Aufgabe erledigen
+  description: Markiert eine Aufgabe als erledigt.
+  fields:
+    instance_id:
+      name: Aufgaben-ID
+      description: Die ID der Task-Instanz, die erledigt werden soll.
+      required: true
+      selector:
+        number:
+          min: 1
+          mode: box
+    user_id:
+      name: Benutzer-ID
+      description: Die ID des Benutzers, der die Aufgabe erledigt hat.
+      required: true
+      selector:
+        number:
+          min: 1
+          mode: box
+    notes:
+      name: Notizen
+      description: Optionale Notizen zur Erledigung.
+      required: false
+      selector:
+        text:
+
+refresh_tasks:
+  name: Aufgaben aktualisieren
+  description: Lädt die Dashboard-Daten neu vom Backend.
+
+sync_rooms:
+  name: Räume synchronisieren
+  description: Synchronisiert Räume und Benutzer aus Home Assistant mit dem ChoreQuest-Backend.

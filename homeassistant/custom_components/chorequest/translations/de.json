@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "ChoreQuest verbinden",
+        "description": "Gib die URL und den API-Key deines ChoreQuest-Backends ein.",
+        "data": {
+          "backend_url": "Backend-URL",
+          "api_key": "API-Key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zum Backend fehlgeschlagen. Prüfe die URL.",
+      "invalid_auth": "Ungültiger API-Key.",
+      "unknown": "Unbekannter Fehler aufgetreten.",
+      "sync_failed": "Synchronisierung fehlgeschlagen."
+    },
+    "abort": {
+      "already_configured": "ChoreQuest ist bereits konfiguriert.",
+      "sync_failed": "Die Synchronisierung von Räumen/Benutzern ist fehlgeschlagen. Bitte erneut versuchen."
+    }
+  }
+}
