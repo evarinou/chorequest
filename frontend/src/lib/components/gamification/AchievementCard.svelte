@@ -21,13 +21,20 @@
 	}
 </script>
 
-<Card class={progress.unlocked ? 'border-accent-400/50' : 'opacity-80'}>
-	<div class="flex items-start gap-3">
+<Card class="{progress.unlocked ? 'gradient-card-gold border-0 relative overflow-hidden' : 'opacity-80 hover:opacity-100 transition-opacity'}">
+	{#if progress.unlocked}
+		<div class="absolute inset-0 animate-shimmer pointer-events-none"></div>
+	{/if}
+	<div class="flex items-start gap-3 relative">
 		<div class="shrink-0 mt-0.5">
 			{#if progress.unlocked}
-				<Icon path={mdiTrophy} size={28} class="text-accent-500" />
+				<span class="animate-bounce-in inline-block">
+					<Icon path={mdiTrophy} size={28} class="text-yellow-600 dark:text-yellow-300" />
+				</span>
 			{:else}
-				<Icon path={mdiLock} size={28} class="text-gray-400" />
+				<span class="inline-block hover:animate-[bounce-in_0.3s_ease-out] cursor-default">
+					<Icon path={mdiLock} size={28} class="text-gray-400" />
+				</span>
 			{/if}
 		</div>
 		<div class="flex-1 min-w-0">

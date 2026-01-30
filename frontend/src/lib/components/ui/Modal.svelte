@@ -32,7 +32,7 @@
 			onclick={handleBackdrop}
 			role="presentation"
 		></div>
-		<div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto z-10">
+		<div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto z-10 animate-bounce-in">
 			{#if title}
 				<div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
 					<h2 class="text-lg font-semibold">{title}</h2>

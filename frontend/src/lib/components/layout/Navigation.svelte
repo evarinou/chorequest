@@ -23,8 +23,11 @@
 		{#each navItems as item (item.href)}
 			<a
 				href={item.href}
-				class="flex flex-col items-center py-2 px-3 text-xs transition-colors {isActive(item.href) ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}"
+				class="flex flex-col items-center py-2 px-3 text-xs transition-all duration-200 relative {isActive(item.href) ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:scale-110'}"
 			>
+				{#if isActive(item.href)}
+					<span class="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-primary-500"></span>
+				{/if}
 				<Icon path={item.icon} size={22} />
 				<span class="mt-1">{item.label}</span>
 			</a>
@@ -38,7 +41,7 @@
 		{#each navItems as item (item.href)}
 			<a
 				href={item.href}
-				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {isActive(item.href) ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'}"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 {isActive(item.href) ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 border-l-3 border-primary-500' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'}"
 			>
 				<Icon path={item.icon} size={20} />
 				{item.label}

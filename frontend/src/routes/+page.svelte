@@ -12,8 +12,10 @@
 	import RoomSection from '$lib/components/dashboard/RoomSection.svelte';
 	import QuickCompleteModal from '$lib/components/dashboard/QuickCompleteModal.svelte';
 	import PointsAnimation from '$lib/components/gamification/PointsAnimation.svelte';
+	import ConfettiEffect from '$lib/components/gamification/ConfettiEffect.svelte';
 	import { showPointsToast, showAchievementToast, showToast } from '$lib/stores/toast';
-	import { mdiCalendarToday, mdiAlertCircle, mdiStar } from '@mdi/js';
+	import AnimatedCounter from '$lib/components/gamification/AnimatedCounter.svelte';
+	import { mdiCalendarToday, mdiAlertCircle, mdiStar, mdiPartyPopper } from '@mdi/js';
 
 	let rooms = $state<Room[]>([]);
 	let instances = $state<TaskInstanceWithDetails[]>([]);
@@ -26,8 +28,9 @@
 	let completeModalOpen = $state(false);
 	let selectedInstance = $state<TaskInstanceWithDetails | null>(null);
 
-	// Punkte-Animation
-	let pointsAnim = $state<{ points: number; x: number; y: number } | null>(null);
+	// Punkte-Animation + Confetti
+	let pointsAnim = $state<{ points: number; bonus: number } | null>(null);
+	let showConfetti = $state(false);
 
 	async function loadData() {
 		if (!$apiKey) {
@@ -78,9 +81,11 @@
 				showAchievementToast(ach.name);
 			}
 
-			// Punkte-Animation
-			pointsAnim = { points: result.bonus_breakdown.total_points, x: 0, y: 0 };
+			// Punkte-Animation + Confetti
+			pointsAnim = { points: result.bonus_breakdown.total_points, bonus: result.bonus_breakdown.bonus_points };
+			showConfetti = true;
 			setTimeout(() => { pointsAnim = null; }, 1500);
+			setTimeout(() => { showConfetti = false; }, 2000);
 
 			await loadData();
 		} catch (e) {
@@ -115,25 +120,26 @@
 {:else}
 	<!-- Stat-Cards -->
 	<div class="grid grid-cols-3 gap-3 mb-6">
-		<Card>
+		<Card class="gradient-card-blue border-0">
 			<div class="flex flex-col items-center text-center">
-				<Icon path={mdiCalendarToday} size={24} class="text-primary-500 mb-1" />
-				<span class="text-2xl font-bold">{tasksToday}</span>
-				<span class="text-xs text-gray-500 dark:text-gray-400">Heute</span>
+				<Icon path={mdiCalendarToday} size={24} class="text-primary-600 dark:text-primary-300 mb-1" />
+				<span class="text-2xl font-bold"><AnimatedCounter value={tasksToday} /></span>
+				<span class="text-xs text-primary-700/70 dark:text-primary-300/70">Heute</span>
 			</div>
 		</Card>
-		<Card class={tasksOverdue > 0 ? 'border-danger-500/50' : ''}>
+		<Card class="{tasksOverdue > 0 ? 'border-danger-500 animate-pulse-glow-red' : ''}">
 			<div class="flex flex-col items-center text-center">
 				<Icon path={mdiAlertCircle} size={24} class={tasksOverdue > 0 ? 'text-danger-500' : 'text-gray-400'} />
-				<span class="text-2xl font-bold" class:text-danger-500={tasksOverdue > 0}>{tasksOverdue}</span>
+				<span class="text-2xl font-bold" class:text-danger-500={tasksOverdue > 0}><AnimatedCounter value={tasksOverdue} /></span>
 				<span class="text-xs text-gray-500 dark:text-gray-400">Überfällig</span>
 			</div>
 		</Card>
-		<Card>
-			<div class="flex flex-col items-center text-center">
-				<Icon path={mdiStar} size={24} class="text-accent-500 mb-1" />
-				<span class="text-2xl font-bold">{currentUser?.weekly_points ?? 0}</span>
-				<span class="text-xs text-gray-500 dark:text-gray-400">Woche</span>
+		<Card class="gradient-card-gold border-0 relative overflow-hidden">
+			<div class="absolute inset-0 animate-shimmer pointer-events-none"></div>
+			<div class="flex flex-col items-center text-center relative">
+				<Icon path={mdiStar} size={24} class="text-yellow-600 dark:text-yellow-300 mb-1" />
+				<span class="text-2xl font-bold"><AnimatedCounter value={currentUser?.weekly_points ?? 0} /></span>
+				<span class="text-xs text-yellow-700/70 dark:text-yellow-300/70">Woche</span>
 			</div>
 		</Card>
 	</div>
@@ -141,7 +147,9 @@
 	<!-- Aufgaben nach Raum -->
 	{#if instances.length === 0}
 		<Card class="text-center py-8">
-			<p class="text-gray-500 dark:text-gray-400">Keine Aufgaben für heute.</p>
+			<Icon path={mdiPartyPopper} size={48} class="text-accent-500 mx-auto mb-3" />
+			<p class="text-lg font-semibold mb-1">Alles erledigt!</p>
+			<p class="text-gray-500 dark:text-gray-400">Keine Aufgaben mehr für heute. Genieße den Rest des Tages!</p>
 		</Card>
 	{:else}
 		{#each rooms.toSorted((a, b) => a.sort_order - b.sort_order) as room (room.id)}
@@ -160,6 +168,10 @@
 	/>
 
 	{#if pointsAnim}
-		<PointsAnimation points={pointsAnim.points} />
+		<PointsAnimation points={pointsAnim.points} bonus={pointsAnim.bonus} />
+	{/if}
+
+	{#if showConfetti}
+		<ConfettiEffect />
 	{/if}
 {/if}

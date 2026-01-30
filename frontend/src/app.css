@@ -43,3 +43,181 @@
 .animate-float-up {
 	animation: float-up 1.5s ease-out forwards;
 }
+
+/* Pulsierender Glow für Buttons/Karten */
+@keyframes pulse-glow {
+	0%, 100% {
+		box-shadow: 0 0 8px var(--glow-color, rgba(59, 130, 246, 0.3));
+	}
+	50% {
+		box-shadow: 0 0 20px var(--glow-color-intense, rgba(59, 130, 246, 0.6));
+	}
+}
+
+/* Federnde Einblendung */
+@keyframes bounce-in {
+	0% {
+		opacity: 0;
+		transform: scale(0.3);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.08);
+	}
+	70% {
+		transform: scale(0.95);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* Goldener Schimmer */
+@keyframes shimmer {
+	0% {
+		background-position: -200% center;
+	}
+	100% {
+		background-position: 200% center;
+	}
+}
+
+/* Fallende Confetti-Partikel */
+@keyframes confetti-fall {
+	0% {
+		opacity: 1;
+		transform: translateY(-10px) rotate(0deg);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(100vh) rotate(720deg);
+	}
+}
+
+/* Flammen-Flackern für Streaks */
+@keyframes flame-flicker {
+	0%, 100% {
+		transform: scale(1) rotate(-2deg);
+	}
+	25% {
+		transform: scale(1.1) rotate(2deg);
+	}
+	50% {
+		transform: scale(0.95) rotate(-1deg);
+	}
+	75% {
+		transform: scale(1.05) rotate(1deg);
+	}
+}
+
+/* Scale-Bounce für Zähler */
+@keyframes count-pop {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+/* Toast Einblendung */
+@keyframes slide-in-right {
+	0% {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes slide-out-right {
+	0% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+/* Utility-Animationsklassen */
+.animate-pulse-glow {
+	animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow-red {
+	--glow-color: rgba(239, 68, 68, 0.3);
+	--glow-color-intense: rgba(239, 68, 68, 0.6);
+	animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow-gold {
+	--glow-color: rgba(234, 179, 8, 0.3);
+	--glow-color-intense: rgba(234, 179, 8, 0.6);
+	animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-bounce-in {
+	animation: bounce-in 0.5s ease-out forwards;
+}
+
+.animate-shimmer {
+	background: linear-gradient(90deg, transparent 0%, rgba(250, 204, 21, 0.3) 50%, transparent 100%);
+	background-size: 200% 100%;
+	animation: shimmer 2s linear infinite;
+}
+
+.animate-flame {
+	animation: flame-flicker 0.6s ease-in-out infinite;
+}
+
+.animate-count-pop {
+	animation: count-pop 0.3s ease-out;
+}
+
+.animate-slide-in {
+	animation: slide-in-right 0.3s ease-out forwards;
+}
+
+/* Gradient-Card-Klassen */
+.gradient-card-gold {
+	background: linear-gradient(135deg, #fef9c3 0%, #fef08a 50%, #fde047 100%);
+}
+.dark .gradient-card-gold {
+	background: linear-gradient(135deg, #422006 0%, #713f12 50%, #854d0e 100%);
+}
+
+.gradient-card-blue {
+	background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%);
+}
+.dark .gradient-card-blue {
+	background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 50%, #1d4ed8 100%);
+}
+
+.gradient-card-purple {
+	background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%);
+}
+.dark .gradient-card-purple {
+	background: linear-gradient(135deg, #3b0764 0%, #581c87 50%, #6b21a8 100%);
+}
+
+.header-gradient {
+	background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(239,246,255,0.9) 100%);
+}
+.dark .header-gradient {
+	background: linear-gradient(135deg, rgba(31,41,55,0.9) 0%, rgba(30,58,138,0.15) 100%);
+}
+
+.gradient-card-green {
+	background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 50%, #86efac 100%);
+}
+.dark .gradient-card-green {
+	background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #166534 100%);
+}

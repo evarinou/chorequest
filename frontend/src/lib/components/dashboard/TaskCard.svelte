@@ -14,10 +14,11 @@
 
 	let isCompleted = $derived(instance.status === 'completed');
 	let isSkipped = $derived(instance.status === 'skipped');
+	let isHighValue = $derived(instance.task.base_points >= 15);
 </script>
 
 <div
-	class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 {isCompleted || isSkipped ? 'opacity-60' : ''}"
+	class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-200 {isCompleted || isSkipped ? 'opacity-60' : 'hover:scale-[1.02] hover:shadow-md active:scale-95 cursor-pointer'} {isHighValue && !isCompleted && !isSkipped ? 'border-l-4 border-l-accent-400' : ''}"
 >
 	<div class="flex-1 min-w-0">
 		<div class="flex items-center gap-2">
