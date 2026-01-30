@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import { mdiRobotHappy, mdiRefresh, mdiClockOutline, mdiDoor, mdiChevronDown, mdiChevronUp } from '@mdi/js';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { apiClient } from '$lib/stores/api';
+	import { createApiClient, ApiError } from '$lib/api/client';
+	import { apiBaseUrl, apiKey } from '$lib/stores/config';
 	import type { WeeklySummary } from '$lib/api/types';
 
 	let latest: WeeklySummary | null = $state(null);
@@ -32,7 +33,8 @@
 		loading = true;
 		error = '';
 		try {
-			const all = await apiClient.summaries.list(20);
+			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
+			const all = await client.summaries.list(20);
 			if (all.length > 0) {
 				latest = all[0];
 				older = all.slice(1);
@@ -56,10 +58,11 @@
 		generating = true;
 		error = '';
 		try {
-			const result = await apiClient.summaries.generate();
+			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
+			const result = await client.summaries.generate();
 			latest = result.summary;
 			// Liste neu laden für korrekte Sortierung
-			const all = await apiClient.summaries.list(20);
+			const all = await client.summaries.list(20);
 			if (all.length > 0) {
 				latest = all[0];
 				older = all.slice(1);
