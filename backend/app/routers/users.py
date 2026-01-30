@@ -123,6 +123,14 @@ async def update_user(user_id: int, data: UserUpdate, db: AsyncSession = Depends
     return user
 
 
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    await db.delete(user)
+
+
 @router.get("/{user_id}/stats", response_model=UserStats)
 async def get_user_stats(user_id: int, db: AsyncSession = Depends(get_db)):
     user = await db.get(User, user_id)
