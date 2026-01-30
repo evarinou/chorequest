@@ -88,19 +88,28 @@ async def sync_rooms(data: RoomSyncRequest, db: AsyncSession = Depends(get_db)):
     updated: list[Room] = []
     warnings: list[str] = []
 
-    # Bestehende Räume mit ha_area_id laden
-    result = await db.execute(select(Room).where(Room.ha_area_id.isnot(None)))
-    existing_rooms = {r.ha_area_id: r for r in result.scalars().all()}
+    # Alle bestehenden Räume laden
+    result = await db.execute(select(Room))
+    all_rooms = result.scalars().all()
+    rooms_by_ha_id = {r.ha_area_id: r for r in all_rooms if r.ha_area_id}
+    rooms_by_name = {r.name.lower(): r for r in all_rooms}
 
     incoming_ids = {a.area_id for a in data.areas}
 
     for area in data.areas:
-        if area.area_id in existing_rooms:
-            room = existing_rooms[area.area_id]
+        if area.area_id in rooms_by_ha_id:
+            # Bereits verknüpfter Raum — ggf. umbenennen
+            room = rooms_by_ha_id[area.area_id]
             if room.name != area.name:
                 room.name = area.name
                 updated.append(room)
                 logger.info("Raum '%s' umbenannt (ha_area_id=%s)", area.name, area.area_id)
+        elif area.name.lower() in rooms_by_name:
+            # Raum mit gleichem Namen existiert — ha_area_id verknüpfen
+            room = rooms_by_name[area.name.lower()]
+            room.ha_area_id = area.area_id
+            updated.append(room)
+            logger.info("Raum '%s' mit HA-Area verknüpft (ha_area_id=%s)", area.name, area.area_id)
         else:
             room = Room(
                 name=area.name,
