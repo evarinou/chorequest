@@ -143,7 +143,7 @@
 			<p class="text-gray-500 dark:text-gray-400">Keine Aufgaben für heute.</p>
 		</Card>
 	{:else}
-		{#each rooms.sort((a, b) => a.sort_order - b.sort_order) as room (room.id)}
+		{#each rooms.toSorted((a, b) => a.sort_order - b.sort_order) as room (room.id)}
 			{@const roomInstances = instancesByRoom.get(room.id) ?? []}
 			{#if roomInstances.length > 0}
 				<RoomSection {room} instances={roomInstances} oncomplete={openComplete} />

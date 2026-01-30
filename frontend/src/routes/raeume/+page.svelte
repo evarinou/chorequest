@@ -90,7 +90,7 @@
 	</Card>
 {:else}
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-		{#each rooms.sort((a, b) => a.sort_order - b.sort_order) as room (room.id)}
+		{#each rooms.toSorted((a, b) => a.sort_order - b.sort_order) as room (room.id)}
 			<Card class="flex items-start justify-between">
 				<div>
 					<h3 class="font-semibold">{room.name}</h3>
