@@ -41,12 +41,13 @@
 
 		try {
 			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
-			const [dashboard, todayInstances] = await Promise.all([
+			const [dashboard, todayInstances, roomList] = await Promise.all([
 				client.dashboard.get(),
-				client.instances.today()
+				client.instances.today(),
+				client.rooms.list()
 			]);
 
-			rooms = dashboard.rooms;
+			rooms = roomList;
 			instances = todayInstances;
 			tasksToday = dashboard.tasks_today;
 			tasksOverdue = dashboard.tasks_overdue;
