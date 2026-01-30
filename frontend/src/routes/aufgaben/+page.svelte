@@ -63,13 +63,17 @@
 		monthly: 'Monatlich'
 	};
 
-	onMount(loadData);
+	let mounted = $state(false);
+
+	onMount(() => {
+		loadData().then(() => { mounted = true; });
+	});
 
 	$effect(() => {
 		// Reloade bei Filter-Änderung
 		void filterRoom;
 		void filterActive;
-		if (!loading) loadData();
+		if (mounted) loadData();
 	});
 </script>
 
