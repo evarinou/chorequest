@@ -14,6 +14,7 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.components import webhook
 from homeassistant.helpers.event import async_track_time_interval
 
 from .api import ChoreQuestApiClient, ChoreQuestApiError
@@ -48,7 +49,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Webhook registrieren (für Echtzeit-Updates vom Backend)
     webhook_id = entry.data.get(CONF_WEBHOOK_ID)
     if webhook_id:
-        hass.components.webhook.async_register(
+        webhook.async_register(
+            hass,
             DOMAIN,
             "ChoreQuest",
             webhook_id,
@@ -83,7 +85,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # Webhook deregistrieren
         webhook_id = data.get("webhook_id")
         if webhook_id:
-            hass.components.webhook.async_unregister(webhook_id)
+            webhook.async_unregister(hass, webhook_id)
     return unload_ok
 
 
