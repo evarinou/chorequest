@@ -22,10 +22,11 @@ async def update_user_streak(db: AsyncSession, user: User) -> StreakUpdate:
     today = date.today()
 
     # Alle Tage mit Completions für diesen User, absteigend sortiert
+    completion_date_col = func.date(TaskCompletion.completed_at).label("completion_date")
     result = await db.execute(
-        select(distinct(func.date(TaskCompletion.completed_at)))
+        select(distinct(completion_date_col))
         .where(TaskCompletion.user_id == user.id)
-        .order_by(func.date(TaskCompletion.completed_at).desc())
+        .order_by(completion_date_col.desc())
     )
     completion_dates = [row[0] for row in result.all()]
 
