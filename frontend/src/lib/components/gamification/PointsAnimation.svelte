@@ -8,16 +8,19 @@
 </script>
 
 <div class="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
-	<div class="animate-bounce-in text-center">
+	<div class="text-center animate-pixel-damage">
 		<div
-			class="text-5xl font-black drop-shadow-lg"
-			style="background: linear-gradient(135deg, #eab308, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+			class="text-nes-gold dark:text-nes-gold drop-shadow-[2px_2px_0_#000]"
+			style="font-family: 'Press Start 2P', monospace; font-size: 48px;"
 		>
-			<span class="animate-shimmer">+{points}</span>
+			+{points} XP
 		</div>
 		{#if bonus > 0}
-			<div class="text-sm font-semibold text-accent-500 mt-1 animate-float-up" style="animation-delay: 0.3s; animation-duration: 1.2s;">
-				inkl. {bonus} Bonus!
+			<div
+				class="text-nes-orange dark:text-nes-orange mt-2 animate-pixel-float-up"
+				style="font-family: 'Press Start 2P', monospace; font-size: 16px; animation-delay: 0.3s;"
+			>
+				BONUS +{bonus}!
 			</div>
 		{/if}
 	</div>

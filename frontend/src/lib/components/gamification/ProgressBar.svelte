@@ -7,17 +7,23 @@
 	let { value, class: className = '' }: Props = $props();
 
 	let clamped = $derived(Math.max(0, Math.min(100, value)));
+	let filledSegments = $derived(Math.floor(clamped / 10));
+	let partialSegment = $derived(clamped % 10 > 0);
 </script>
 
-<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 {className} relative overflow-hidden">
-	<div
-		class="h-3 rounded-full transition-all duration-500 relative"
-		style="width: {clamped}%; background: linear-gradient(90deg, #3b82f6, #8b5cf6, #eab308);"
-	>
-		{#if clamped > 15}
-			<span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white drop-shadow-sm">
+<div class="w-full {className}">
+	<div class="flex gap-px h-4 border-3 border-[#5a3a1a] dark:border-crt-green bg-parchment-300 dark:bg-[#0a1a0a]">
+		{#each Array(10) as _, i}
+			<div
+				class="flex-1 transition-colors duration-100 {i < filledSegments ? 'bg-nes-green dark:bg-crt-green' : i === filledSegments && partialSegment ? 'bg-nes-green/30 dark:bg-crt-green/30' : ''}"
+			></div>
+		{/each}
+	</div>
+	{#if clamped > 0}
+		<div class="text-center mt-0.5">
+			<span class="text-[8px] text-parchment-400 dark:text-crt-green" style="font-family: 'Press Start 2P', monospace;">
 				{Math.round(clamped)}%
 			</span>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>

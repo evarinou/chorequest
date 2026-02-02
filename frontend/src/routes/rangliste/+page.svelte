@@ -4,12 +4,12 @@
 	import { apiBaseUrl, apiKey } from '$lib/stores/config';
 	import type { User } from '$lib/api/types';
 	import Card from '$lib/components/ui/Card.svelte';
-	import Icon from '$lib/components/ui/Icon.svelte';
 	import Loading from '$lib/components/shared/Loading.svelte';
 	import ErrorMessage from '$lib/components/shared/ErrorMessage.svelte';
 	import AnimatedCounter from '$lib/components/gamification/AnimatedCounter.svelte';
 	import StreakBadge from '$lib/components/gamification/StreakBadge.svelte';
-	import { mdiTrophyVariant, mdiCrown } from '@mdi/js';
+	import { generatePixelAvatar } from '$lib/utils/pixelAvatar';
+	import { getLevelInfo } from '$lib/utils/level';
 
 	let users = $state<User[]>([]);
 	let loading = $state(true);
@@ -48,19 +48,21 @@
 </svelte:head>
 
 <div class="flex items-center justify-between mb-6">
-	<h1 class="text-2xl font-bold">Rangliste</h1>
-	<div class="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-0.5">
+	<h1 class="text-sm">HIGHSCORES</h1>
+	<div class="flex pixel-border bg-parchment-200 dark:bg-crt-panel p-0.5">
 		<button
 			onclick={() => { mode = 'weekly'; }}
-			class="px-3 py-1.5 text-sm rounded-md transition-colors {mode === 'weekly' ? 'bg-white dark:bg-gray-600 shadow-sm font-medium' : 'text-gray-600 dark:text-gray-400'}"
+			class="px-3 py-1.5 text-[8px] transition-colors {mode === 'weekly' ? 'bg-nes-green text-white dark:bg-crt-dark-green dark:text-crt-green' : 'text-parchment-400 dark:text-crt-green/50'}"
+			style="font-family: 'Press Start 2P', monospace;"
 		>
-			Woche
+			WOCHE
 		</button>
 		<button
 			onclick={() => { mode = 'total'; }}
-			class="px-3 py-1.5 text-sm rounded-md transition-colors {mode === 'total' ? 'bg-white dark:bg-gray-600 shadow-sm font-medium' : 'text-gray-600 dark:text-gray-400'}"
+			class="px-3 py-1.5 text-[8px] transition-colors {mode === 'total' ? 'bg-nes-green text-white dark:bg-crt-dark-green dark:text-crt-green' : 'text-parchment-400 dark:text-crt-green/50'}"
+			style="font-family: 'Press Start 2P', monospace;"
 		>
-			Gesamt
+			GESAMT
 		</button>
 	</div>
 </div>
@@ -71,56 +73,63 @@
 	<ErrorMessage message={error} onretry={loadData} />
 {:else if users.length === 0}
 	<Card class="text-center py-8">
-		<p class="text-gray-500 dark:text-gray-400">Keine Daten vorhanden.</p>
+		<p class="text-parchment-400 dark:text-crt-green/60">Keine Daten.</p>
 	</Card>
 {:else}
-	<!-- Podium für Top 3 -->
+	<!-- Pixel Podium -->
 	{#if users.length >= 2}
-		<div class="flex items-end justify-center gap-2 mb-8 px-4">
-			<!-- Platz 2 - Silber -->
-			<a href="/profil/{users[1].id}" class="flex flex-col items-center flex-1 max-w-[130px] group">
-				<div class="text-center mb-2">
-					<span class="text-sm font-semibold text-gray-600 dark:text-gray-300 group-hover:text-primary-500 transition-colors truncate block">
-						{users[1].display_name || users[1].username}
-					</span>
+		<div class="flex items-end justify-center gap-3 mb-8 px-4">
+			<!-- Platz 2 -->
+			<a href="/profil/{users[1].id}" class="flex flex-col items-center flex-1 max-w-[130px]">
+				<div class="w-10 h-10 border-2 border-[#5a3a1a] dark:border-crt-green mb-1">
+					{@html generatePixelAvatar(users[1].id, 40)}
 				</div>
-				<div class="w-full rounded-t-xl bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex flex-col items-center justify-end pt-4 pb-3 h-24 relative">
-					<Icon path={mdiTrophyVariant} size={28} class="text-gray-400 mb-1" />
-					<span class="font-bold text-lg"><AnimatedCounter value={getPoints(users[1])} /></span>
-					<span class="text-xs text-gray-500">Pkt.</span>
-					<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-300 dark:bg-gray-500 text-gray-700 dark:text-gray-200 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">2</span>
+				<span class="text-[8px] text-parchment-400 dark:text-crt-green truncate block w-full text-center" style="font-family: 'Press Start 2P', monospace;">
+					{users[1].display_name || users[1].username}
+				</span>
+				<div class="w-full pixel-border bg-parchment-200 dark:bg-crt-panel flex flex-col items-center justify-end pt-3 pb-2 h-20 mt-1">
+					<span class="text-lg">🥈</span>
+					<span class="text-[10px] font-bold text-nes-gold" style="font-family: 'Press Start 2P', monospace;">
+						<AnimatedCounter value={getPoints(users[1])} />
+					</span>
+					<span class="text-[7px] text-parchment-400 dark:text-crt-green/50" style="font-family: 'Press Start 2P', monospace;">XP</span>
 				</div>
 			</a>
 
-			<!-- Platz 1 - Gold -->
-			<a href="/profil/{users[0].id}" class="flex flex-col items-center flex-1 max-w-[140px] group">
-				<div class="text-center mb-2">
-					<Icon path={mdiCrown} size={24} class="text-yellow-500 mx-auto animate-bounce-in" />
-					<span class="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-primary-500 transition-colors truncate block">
-						{users[0].display_name || users[0].username}
-					</span>
+			<!-- Platz 1 -->
+			<a href="/profil/{users[0].id}" class="flex flex-col items-center flex-1 max-w-[140px]">
+				<div class="text-2xl mb-1 animate-pixel-bounce">👑</div>
+				<div class="w-12 h-12 border-3 border-nes-gold mb-1">
+					{@html generatePixelAvatar(users[0].id, 48)}
 				</div>
-				<div class="w-full rounded-t-xl gradient-card-gold flex flex-col items-center justify-end pt-4 pb-3 h-32 relative animate-shimmer overflow-hidden">
-					<Icon path={mdiTrophyVariant} size={36} class="text-yellow-600 dark:text-yellow-300 mb-1" />
-					<span class="font-bold text-xl"><AnimatedCounter value={getPoints(users[0])} /></span>
-					<span class="text-xs text-yellow-700/70 dark:text-yellow-300/70">Pkt.</span>
-					<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold shadow-md">1</span>
+				<span class="text-[8px] text-nes-gold truncate block w-full text-center" style="font-family: 'Press Start 2P', monospace;">
+					{users[0].display_name || users[0].username}
+				</span>
+				<div class="w-full pixel-border-gold bg-nes-gold/10 dark:bg-nes-gold/5 flex flex-col items-center justify-end pt-4 pb-2 h-28 mt-1 overflow-hidden relative">
+					<div class="absolute inset-0 animate-shimmer pointer-events-none"></div>
+					<span class="text-2xl relative">🏆</span>
+					<span class="text-sm font-bold text-nes-gold relative" style="font-family: 'Press Start 2P', monospace;">
+						<AnimatedCounter value={getPoints(users[0])} />
+					</span>
+					<span class="text-[7px] text-nes-gold/70 relative" style="font-family: 'Press Start 2P', monospace;">XP</span>
 				</div>
 			</a>
 
-			<!-- Platz 3 - Bronze -->
+			<!-- Platz 3 -->
 			{#if users.length >= 3}
-				<a href="/profil/{users[2].id}" class="flex flex-col items-center flex-1 max-w-[130px] group">
-					<div class="text-center mb-2">
-						<span class="text-sm font-semibold text-gray-600 dark:text-gray-300 group-hover:text-primary-500 transition-colors truncate block">
-							{users[2].display_name || users[2].username}
-						</span>
+				<a href="/profil/{users[2].id}" class="flex flex-col items-center flex-1 max-w-[130px]">
+					<div class="w-10 h-10 border-2 border-[#5a3a1a] dark:border-crt-green mb-1">
+						{@html generatePixelAvatar(users[2].id, 40)}
 					</div>
-					<div class="w-full rounded-t-xl bg-gradient-to-b from-amber-200 to-amber-300 dark:from-amber-800 dark:to-amber-900 flex flex-col items-center justify-end pt-4 pb-3 h-20 relative">
-						<Icon path={mdiTrophyVariant} size={24} class="text-amber-600 dark:text-amber-400 mb-1" />
-						<span class="font-bold text-lg"><AnimatedCounter value={getPoints(users[2])} /></span>
-						<span class="text-xs text-amber-700/70 dark:text-amber-400/70">Pkt.</span>
-						<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 dark:bg-amber-600 text-amber-900 dark:text-amber-100 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">3</span>
+					<span class="text-[8px] text-parchment-400 dark:text-crt-green truncate block w-full text-center" style="font-family: 'Press Start 2P', monospace;">
+						{users[2].display_name || users[2].username}
+					</span>
+					<div class="w-full pixel-border bg-parchment-200 dark:bg-crt-panel flex flex-col items-center justify-end pt-3 pb-2 h-16 mt-1">
+						<span class="text-lg">🥉</span>
+						<span class="text-[10px] font-bold text-nes-gold" style="font-family: 'Press Start 2P', monospace;">
+							<AnimatedCounter value={getPoints(users[2])} />
+						</span>
+						<span class="text-[7px] text-parchment-400 dark:text-crt-green/50" style="font-family: 'Press Start 2P', monospace;">XP</span>
 					</div>
 				</a>
 			{/if}
@@ -132,24 +141,24 @@
 		{#each users.slice(users.length >= 2 ? 3 : 0) as user, i (user.id)}
 			{@const rank = (users.length >= 2 ? 3 : 0) + i + 1}
 			<a href="/profil/{user.id}" class="block">
-				<Card class="flex items-center gap-4 hover:border-primary-300 dark:hover:border-primary-600 hover:scale-[1.01] transition-all duration-200">
-					<div class="w-8 text-center">
-						<span class="text-lg font-bold text-gray-400">{rank}</span>
+				<Card class="flex items-center gap-4 hover:bg-parchment-200 dark:hover:bg-crt-dark-green transition-colors">
+					<span class="w-8 text-center text-[10px] text-parchment-400 dark:text-crt-green/60" style="font-family: 'Press Start 2P', monospace;">
+						{rank}
+					</span>
+					<div class="w-6 h-6 border-2 border-[#5a3a1a] dark:border-crt-green shrink-0">
+						{@html generatePixelAvatar(user.id, 24)}
 					</div>
 					<div class="flex-1">
-						<span class="font-semibold">{user.display_name || user.username}</span>
-						<div class="flex items-center gap-3 mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-							{#if user.current_streak > 0}
+						<span class="text-sm">{user.display_name || user.username}</span>
+						{#if user.current_streak > 0}
+							<span class="ml-2">
 								<StreakBadge streak={user.current_streak} size="sm" />
-							{/if}
-						</div>
+							</span>
+						{/if}
 					</div>
-					<div class="text-right">
-						<span class="text-lg font-bold text-primary-600 dark:text-primary-400">
-							<AnimatedCounter value={getPoints(user)} />
-						</span>
-						<span class="text-xs text-gray-500 ml-1">Pkt.</span>
-					</div>
+					<span class="text-[10px] text-nes-gold" style="font-family: 'Press Start 2P', monospace;">
+						<AnimatedCounter value={getPoints(user)} /> XP
+					</span>
 				</Card>
 			</a>
 		{/each}

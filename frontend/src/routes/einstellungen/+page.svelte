@@ -5,7 +5,7 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { mdiCheck, mdiAlertCircle, mdiWeatherNight, mdiWeatherSunny } from '@mdi/js';
+	import { mdiCheck, mdiAlertCircle } from '@mdi/js';
 
 	let testStatus = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
 	let testMessage = $state('');
@@ -16,7 +16,7 @@
 			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
 			const health = await client.health.check();
 			testStatus = 'success';
-			testMessage = `Verbunden mit ${health.app} v${health.version}`;
+			testMessage = `Verbunden: ${health.app} v${health.version}`;
 		} catch (e) {
 			testStatus = 'error';
 			testMessage = e instanceof ApiError ? e.detail : 'Verbindung fehlgeschlagen';
@@ -28,43 +28,43 @@
 	<title>Einstellungen - ChoreQuest</title>
 </svelte:head>
 
-<h1 class="text-2xl font-bold mb-6">Einstellungen</h1>
+<h1 class="text-sm mb-6">OPTIONEN</h1>
 
 <div class="space-y-6">
 	<Card>
-		<h2 class="text-lg font-semibold mb-4">API-Verbindung</h2>
+		<h2 class="text-[10px] mb-4" style="font-family: 'Press Start 2P', monospace;">API-VERBINDUNG</h2>
 		<div class="space-y-4">
 			<div>
-				<label for="api-url" class="block text-sm font-medium mb-1">API Base URL</label>
+				<label for="api-url" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">BASE URL</label>
 				<input
 					id="api-url"
 					type="url"
 					bind:value={$apiBaseUrl}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 					placeholder="http://localhost:8000"
 				/>
 			</div>
 			<div>
-				<label for="api-key" class="block text-sm font-medium mb-1">API Key</label>
+				<label for="api-key" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">API KEY</label>
 				<input
 					id="api-key"
 					type="password"
 					bind:value={$apiKey}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
-					placeholder="API-Schlüssel eingeben..."
+					class="pixel-input"
+					placeholder="API-Schlüssel..."
 				/>
 			</div>
 			<div class="flex items-center gap-3">
 				<Button onclick={testConnection} disabled={testStatus === 'loading'}>
-					{testStatus === 'loading' ? 'Teste...' : 'Verbindung testen'}
+					{testStatus === 'loading' ? 'TESTE...' : 'VERBINDUNG TESTEN'}
 				</Button>
 				{#if testStatus === 'success'}
-					<span class="flex items-center gap-1 text-sm text-success-600 dark:text-success-500">
+					<span class="flex items-center gap-1 text-nes-green dark:text-crt-green text-sm">
 						<Icon path={mdiCheck} size={16} />
 						{testMessage}
 					</span>
 				{:else if testStatus === 'error'}
-					<span class="flex items-center gap-1 text-sm text-danger-500">
+					<span class="flex items-center gap-1 text-nes-red text-sm">
 						<Icon path={mdiAlertCircle} size={16} />
 						{testMessage}
 					</span>
@@ -74,22 +74,17 @@
 	</Card>
 
 	<Card>
-		<h2 class="text-lg font-semibold mb-4">Darstellung</h2>
+		<h2 class="text-[10px] mb-4" style="font-family: 'Press Start 2P', monospace;">DARSTELLUNG</h2>
 		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-3">
-				<Icon path={$darkMode ? mdiWeatherNight : mdiWeatherSunny} size={20} />
-				<span class="text-sm font-medium">
-					{$darkMode ? 'Dunkler Modus' : 'Heller Modus'}
-				</span>
-			</div>
+			<span class="text-sm">
+				{$darkMode ? '🌙 CRT-Modus (Dunkel)' : '☀️ Pergament-Modus (Hell)'}
+			</span>
 			<button
 				onclick={() => { $darkMode = !$darkMode; }}
 				aria-label="Dark Mode umschalten"
-				class="relative w-12 h-6 rounded-full transition-colors {$darkMode ? 'bg-primary-600' : 'bg-gray-300'}"
+				class="pixel-toggle {$darkMode ? 'active' : ''}"
 			>
-				<span
-					class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform {$darkMode ? 'translate-x-6' : ''}"
-				></span>
+				<span class="pixel-toggle-knob"></span>
 			</button>
 		</div>
 	</Card>

@@ -28,27 +28,31 @@
 		onkeydown={handleKeydown}
 	>
 		<div
-			class="fixed inset-0 bg-black/50 transition-opacity"
+			class="fixed inset-0 bg-black/80"
 			onclick={handleBackdrop}
 			role="presentation"
 		></div>
-		<div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto z-10 animate-bounce-in">
-			{#if title}
-				<div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-					<h2 class="text-lg font-semibold">{title}</h2>
-					<button
-						onclick={onclose}
-						aria-label="Schließen"
-						class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-					>
-						<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-							<path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-						</svg>
-					</button>
+		<div class="relative max-w-lg w-full max-h-[90vh] overflow-y-auto z-10 animate-pixel-pop-in">
+			<!-- RPG Dialog Box -->
+			<div class="pixel-border bg-parchment-50 dark:bg-crt-panel">
+				{#if title}
+					<div class="flex items-center justify-between px-4 py-2 bg-nes-blue dark:bg-crt-dark-green border-b-3 border-b-[#0005]">
+						<h2 class="text-[10px] text-white dark:text-crt-green" style="font-family: 'Press Start 2P', monospace;">
+							{title}
+						</h2>
+						<button
+							onclick={onclose}
+							aria-label="Schließen"
+							class="text-white/70 hover:text-white dark:text-crt-green/70 dark:hover:text-crt-green text-[10px]"
+							style="font-family: 'Press Start 2P', monospace;"
+						>
+							X
+						</button>
+					</div>
+				{/if}
+				<div class="p-4">
+					{@render children()}
 				</div>
-			{/if}
-			<div class="p-4">
-				{@render children()}
 			</div>
 		</div>
 	</div>

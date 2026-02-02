@@ -10,7 +10,7 @@
 	import Loading from '$lib/components/shared/Loading.svelte';
 	import ErrorMessage from '$lib/components/shared/ErrorMessage.svelte';
 	import { showToast } from '$lib/stores/toast';
-	import { mdiPlus, mdiPencil, mdiDelete, mdiStar, mdiClock } from '@mdi/js';
+	import { mdiPlus, mdiPencil, mdiDelete } from '@mdi/js';
 
 	let tasks = $state<Task[]>([]);
 	let rooms = $state<Room[]>([]);
@@ -41,11 +41,11 @@
 	}
 
 	async function deleteTask(id: number) {
-		if (!confirm('Aufgabe wirklich löschen?')) return;
+		if (!confirm('Quest wirklich löschen?')) return;
 		try {
 			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
 			await client.tasks.delete(id);
-			showToast('Aufgabe gelöscht', 'success');
+			showToast('Quest gelöscht', 'success');
 			await loadData();
 		} catch (e) {
 			showToast('Fehler beim Löschen', 'error');
@@ -70,7 +70,6 @@
 	});
 
 	$effect(() => {
-		// Reloade bei Filter-Änderung
 		void filterRoom;
 		void filterActive;
 		if (mounted) loadData();
@@ -82,11 +81,11 @@
 </svelte:head>
 
 <div class="flex items-center justify-between mb-6">
-	<h1 class="text-2xl font-bold">Aufgaben</h1>
+	<h1 class="text-sm">QUEST-VERWALTUNG</h1>
 	<a href="/aufgaben/neu">
 		<Button>
-			<Icon path={mdiPlus} size={18} />
-			Neue Aufgabe
+			<Icon path={mdiPlus} size={16} />
+			NEUE QUEST
 		</Button>
 	</a>
 </div>
@@ -95,24 +94,24 @@
 <Card class="mb-4">
 	<div class="flex flex-wrap gap-4">
 		<div>
-			<label for="filter-room" class="block text-xs font-medium mb-1">Raum</label>
+			<label for="filter-room" class="block text-[8px] mb-1" style="font-family: 'Press Start 2P', monospace;">ZONE</label>
 			<select
 				id="filter-room"
 				bind:value={filterRoom}
-				class="text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1.5"
+				class="pixel-input !w-auto"
 			>
-				<option value={null}>Alle Räume</option>
+				<option value={null}>Alle Zonen</option>
 				{#each rooms as room (room.id)}
 					<option value={room.id}>{room.name}</option>
 				{/each}
 			</select>
 		</div>
 		<div>
-			<label for="filter-active" class="block text-xs font-medium mb-1">Status</label>
+			<label for="filter-active" class="block text-[8px] mb-1" style="font-family: 'Press Start 2P', monospace;">STATUS</label>
 			<select
 				id="filter-active"
 				bind:value={filterActive}
-				class="text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1.5"
+				class="pixel-input !w-auto"
 			>
 				<option value={null}>Alle</option>
 				<option value={true}>Aktiv</option>
@@ -128,42 +127,39 @@
 	<ErrorMessage message={error} onretry={loadData} />
 {:else if tasks.length === 0}
 	<Card class="text-center py-8">
-		<p class="text-gray-500 dark:text-gray-400">Keine Aufgaben gefunden.</p>
+		<p class="text-parchment-400 dark:text-crt-green/60">Keine Quests gefunden.</p>
 	</Card>
 {:else}
 	<div class="space-y-2">
 		{#each tasks as task (task.id)}
 			<Card class="flex items-center gap-3">
+				<div class="shrink-0 text-nes-gold text-sm">
+					{task.base_points >= 20 ? '★★★' : task.base_points >= 10 ? '★★' : '★'}
+				</div>
 				<div class="flex-1 min-w-0">
 					<div class="flex items-center gap-2">
-						<span class="font-medium text-sm">{task.title}</span>
+						<span class="text-sm">{task.title}</span>
 						{#if !task.is_active}
-							<Badge variant="default">Inaktiv</Badge>
+							<Badge variant="default">INAKTIV</Badge>
 						{/if}
 					</div>
-					<div class="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+					<div class="flex items-center gap-3 mt-1 text-xs text-parchment-400 dark:text-crt-green/60">
 						<span>{getRoomName(task.room_id)}</span>
-						<span class="flex items-center gap-1">
-							<Icon path={mdiStar} size={12} />
-							{task.base_points}
-						</span>
-						<span class="flex items-center gap-1">
-							<Icon path={mdiClock} size={12} />
-							{task.estimated_minutes} Min.
-						</span>
+						<Badge variant="points">{task.base_points} XP</Badge>
+						<span>{task.estimated_minutes} Min.</span>
 						<Badge>{recurrenceLabels[task.recurrence] ?? task.recurrence}</Badge>
 					</div>
 				</div>
 				<div class="flex items-center gap-1">
 					<a
 						href="/aufgaben/{task.id}"
-						class="p-2 rounded-lg text-gray-400 hover:text-primary-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+						class="p-2 text-parchment-400 hover:text-nes-gold dark:text-crt-green/60 dark:hover:text-crt-green"
 					>
 						<Icon path={mdiPencil} size={18} />
 					</a>
 					<button
 						onclick={() => deleteTask(task.id)}
-						class="p-2 rounded-lg text-gray-400 hover:text-danger-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+						class="p-2 text-parchment-400 hover:text-nes-red dark:text-crt-green/60 dark:hover:text-nes-red"
 					>
 						<Icon path={mdiDelete} size={18} />
 					</button>

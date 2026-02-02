@@ -24,7 +24,7 @@
 	let {
 		rooms,
 		initial = {},
-		submitLabel = 'Speichern',
+		submitLabel = 'SPEICHERN',
 		onsubmit,
 		oncancel,
 		submitting = false
@@ -58,35 +58,35 @@
 <Card>
 	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4">
 		<div>
-			<label for="title" class="block text-sm font-medium mb-1">Titel *</label>
+			<label for="title" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">QUEST-NAME *</label>
 			<input
 				id="title"
 				type="text"
 				bind:value={title}
 				required
-				class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+				class="pixel-input"
 				placeholder="z.B. Küche wischen"
 			/>
 		</div>
 
 		<div>
-			<label for="description" class="block text-sm font-medium mb-1">Beschreibung</label>
+			<label for="description" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">BESCHREIBUNG</label>
 			<textarea
 				id="description"
 				bind:value={description}
 				rows={2}
-				class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+				class="pixel-input"
 				placeholder="Optionale Details..."
 			></textarea>
 		</div>
 
 		<div class="grid grid-cols-2 gap-4">
 			<div>
-				<label for="room" class="block text-sm font-medium mb-1">Raum *</label>
+				<label for="room" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">ZONE *</label>
 				<select
 					id="room"
 					bind:value={room_id}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				>
 					{#each rooms as room (room.id)}
 						<option value={room.id}>{room.name}</option>
@@ -95,11 +95,11 @@
 			</div>
 
 			<div>
-				<label for="recurrence" class="block text-sm font-medium mb-1">Wiederholung</label>
+				<label for="recurrence" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">FREQUENZ</label>
 				<select
 					id="recurrence"
 					bind:value={recurrence}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				>
 					<option value="once">Einmalig</option>
 					<option value="daily">Täglich</option>
@@ -111,11 +111,11 @@
 
 		{#if recurrence === 'weekly'}
 			<div>
-				<label for="recurrence-day" class="block text-sm font-medium mb-1">Wochentag</label>
+				<label for="recurrence-day" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">WOCHENTAG</label>
 				<select
 					id="recurrence-day"
 					bind:value={recurrence_day}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				>
 					{#each weekdays as day, i}
 						<option value={i}>{day}</option>
@@ -126,54 +126,54 @@
 
 		{#if recurrence === 'monthly'}
 			<div>
-				<label for="recurrence-day-monthly" class="block text-sm font-medium mb-1">Tag im Monat</label>
+				<label for="recurrence-day-monthly" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">TAG</label>
 				<input
 					id="recurrence-day-monthly"
 					type="number"
 					min={1}
 					max={28}
 					bind:value={recurrence_day}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				/>
 			</div>
 		{/if}
 
 		<div class="grid grid-cols-2 gap-4">
 			<div>
-				<label for="points" class="block text-sm font-medium mb-1">Punkte</label>
+				<label for="points" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">XP-WERT</label>
 				<input
 					id="points"
 					type="number"
 					min={1}
 					max={100}
 					bind:value={base_points}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				/>
 			</div>
 			<div>
-				<label for="minutes" class="block text-sm font-medium mb-1">Geschätzte Minuten</label>
+				<label for="minutes" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">MINUTEN</label>
 				<input
 					id="minutes"
 					type="number"
 					min={1}
 					max={240}
 					bind:value={estimated_minutes}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				/>
 			</div>
 		</div>
 
 		{#if initial.title}
 			<div class="flex items-center gap-2">
-				<input id="active" type="checkbox" bind:checked={is_active} class="rounded" />
-				<label for="active" class="text-sm font-medium">Aktiv</label>
+				<input id="active" type="checkbox" bind:checked={is_active} class="w-5 h-5 accent-nes-green" />
+				<label for="active" class="text-[9px]" style="font-family: 'Press Start 2P', monospace;">AKTIV</label>
 			</div>
 		{/if}
 
 		<div class="flex gap-3 justify-end pt-2">
-			<Button variant="secondary" onclick={oncancel}>Abbrechen</Button>
+			<Button variant="secondary" onclick={oncancel}>ZURÜCK</Button>
 			<Button type="submit" disabled={!title || !room_id || submitting}>
-				{submitting ? 'Speichert...' : submitLabel}
+				{submitting ? 'SPEICHERT...' : submitLabel}
 			</Button>
 		</div>
 	</form>

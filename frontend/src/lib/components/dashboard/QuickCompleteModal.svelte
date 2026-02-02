@@ -32,24 +32,24 @@
 	}
 </script>
 
-<Modal {open} title="Aufgabe erledigen" {onclose}>
+<Modal {open} title="QUEST ABSCHLIESSEN" {onclose}>
 	{#if instance}
 		<div class="space-y-4">
 			<div>
-				<p class="font-medium">{instance.task.title}</p>
+				<p class="text-sm" style="font-family: 'Press Start 2P', monospace;">{instance.task.title}</p>
 				{#if instance.task.description}
-					<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{instance.task.description}</p>
+					<p class="text-sm text-parchment-400 dark:text-crt-green/70 mt-1">{instance.task.description}</p>
 				{/if}
 			</div>
 
 			<div>
-				<label for="user-select" class="block text-sm font-medium mb-1">Erledigt von</label>
+				<label for="user-select" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">HELD</label>
 				<select
 					id="user-select"
 					bind:value={userId}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+					class="pixel-input"
 				>
-					<option value={null}>Benutzer wählen...</option>
+					<option value={null}>-- Held wählen --</option>
 					{#each $users as user (user.id)}
 						<option value={user.id}>{user.display_name || user.username}</option>
 					{/each}
@@ -57,20 +57,20 @@
 			</div>
 
 			<div>
-				<label for="notes" class="block text-sm font-medium mb-1">Notizen (optional)</label>
+				<label for="notes" class="block text-[9px] mb-1" style="font-family: 'Press Start 2P', monospace;">NOTIZEN</label>
 				<textarea
 					id="notes"
 					bind:value={notes}
 					rows={2}
-					class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
-					placeholder="z.B. Backofen mitgeputzt..."
+					class="pixel-input"
+					placeholder="Optional..."
 				></textarea>
 			</div>
 
 			<div class="flex gap-3 justify-end">
-				<Button variant="secondary" onclick={onclose}>Abbrechen</Button>
+				<Button variant="secondary" onclick={onclose}>ZURÜCK</Button>
 				<Button onclick={handleSubmit} disabled={!userId || submitting}>
-					{submitting ? 'Wird gespeichert...' : 'Erledigt!'}
+					{submitting ? 'SPEICHERT...' : 'ERLEDIGT!'}
 				</Button>
 			</div>
 		</div>

@@ -4,13 +4,14 @@
 	import { apiBaseUrl, apiKey } from '$lib/stores/config';
 	import type { UserStats, AchievementProgress } from '$lib/api/types';
 	import Card from '$lib/components/ui/Card.svelte';
-	import Icon from '$lib/components/ui/Icon.svelte';
 	import Loading from '$lib/components/shared/Loading.svelte';
 	import ErrorMessage from '$lib/components/shared/ErrorMessage.svelte';
 	import AchievementCard from '$lib/components/gamification/AchievementCard.svelte';
 	import AnimatedCounter from '$lib/components/gamification/AnimatedCounter.svelte';
 	import StreakBadge from '$lib/components/gamification/StreakBadge.svelte';
-	import { mdiStar, mdiFire, mdiTrophy, mdiCheckAll } from '@mdi/js';
+	import ProgressBar from '$lib/components/gamification/ProgressBar.svelte';
+	import { generatePixelAvatar } from '$lib/utils/pixelAvatar';
+	import { getLevelInfo } from '$lib/utils/level';
 
 	let { data } = $props();
 
@@ -18,6 +19,9 @@
 	let achievements = $state<AchievementProgress[]>([]);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+
+	let levelInfo = $derived(stats ? getLevelInfo(stats.user.total_points) : null);
+	let avatarSvg = $derived(stats ? generatePixelAvatar(stats.user.id, 64) : '');
 
 	async function loadData() {
 		loading = true;
@@ -48,59 +52,73 @@
 	<Loading />
 {:else if error}
 	<ErrorMessage message={error} onretry={loadData} />
-{:else if stats}
-	<h1 class="text-2xl font-bold mb-6">{stats.user.display_name || stats.user.username}</h1>
+{:else if stats && levelInfo}
+	<!-- Character Header -->
+	<div class="flex items-center gap-4 mb-6">
+		<div class="w-16 h-16 border-3 border-nes-gold shrink-0">
+			{@html avatarSvg}
+		</div>
+		<div class="flex-1">
+			<h1 class="text-sm mb-1">{(stats.user.display_name || stats.user.username).toUpperCase()}</h1>
+			<div class="text-[8px] text-nes-gold mb-2" style="font-family: 'Press Start 2P', monospace;">
+				LV.{levelInfo.level} {levelInfo.title}
+			</div>
+			<ProgressBar value={levelInfo.progress} />
+			<span class="text-xs text-parchment-400 dark:text-crt-green/60">
+				{levelInfo.currentXP} / {levelInfo.requiredXP} XP zum nächsten Level
+			</span>
+		</div>
+	</div>
 
-	<!-- Stat-Cards -->
+	<!-- Stat Boxes -->
 	<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-		<Card class="gradient-card-gold border-0 relative overflow-hidden">
-			<div class="absolute inset-0 animate-shimmer pointer-events-none"></div>
-			<div class="flex flex-col items-center text-center relative">
-				<Icon path={mdiStar} size={24} class="text-yellow-600 dark:text-yellow-300 mb-1" />
-				<span class="text-xl font-bold"><AnimatedCounter value={stats.user.total_points} /></span>
-				<span class="text-xs text-yellow-700/70 dark:text-yellow-300/70">Gesamtpunkte</span>
+		<Card class="pixel-border-gold">
+			<div class="flex flex-col items-center text-center">
+				<span class="text-[7px] text-nes-gold mb-1" style="font-family: 'Press Start 2P', monospace;">GESAMT-XP</span>
+				<span class="text-2xl font-bold text-nes-gold"><AnimatedCounter value={stats.user.total_points} /></span>
 			</div>
 		</Card>
-		<Card class="gradient-card-purple border-0">
+		<Card>
 			<div class="flex flex-col items-center text-center">
+				<span class="text-[7px] text-nes-orange mb-1" style="font-family: 'Press Start 2P', monospace;">STREAK</span>
 				{#if stats.user.current_streak > 0}
-					<StreakBadge streak={stats.user.current_streak} size="md" />
+					<StreakBadge streak={stats.user.current_streak} size="lg" />
 				{:else}
-					<Icon path={mdiFire} size={24} class="text-gray-400 mb-1" />
+					<span class="text-2xl text-parchment-400 dark:text-crt-green/40">0</span>
 				{/if}
-				<span class="text-xl font-bold"><AnimatedCounter value={stats.user.current_streak} /></span>
-				<span class="text-xs text-purple-700/70 dark:text-purple-300/70">Tage Streak</span>
+				<span class="text-xs text-parchment-400 dark:text-crt-green/50 mt-1">Tage</span>
 			</div>
 		</Card>
-		<Card class="gradient-card-green border-0">
+		<Card>
 			<div class="flex flex-col items-center text-center">
-				<Icon path={mdiCheckAll} size={24} class="text-green-600 dark:text-green-300 mb-1" />
-				<span class="text-xl font-bold"><AnimatedCounter value={stats.tasks_completed_total} /></span>
-				<span class="text-xs text-green-700/70 dark:text-green-300/70">Erledigt</span>
+				<span class="text-[7px] text-nes-green dark:text-crt-green mb-1" style="font-family: 'Press Start 2P', monospace;">ERLEDIGT</span>
+				<span class="text-2xl font-bold text-nes-green dark:text-crt-green"><AnimatedCounter value={stats.tasks_completed_total} /></span>
 			</div>
 		</Card>
-		<Card class="gradient-card-blue border-0">
+		<Card>
 			<div class="flex flex-col items-center text-center">
-				<Icon path={mdiTrophy} size={24} class="text-primary-600 dark:text-primary-300 mb-1" />
-				<span class="text-xl font-bold"><AnimatedCounter value={stats.achievements_count} /></span>
-				<span class="text-xs text-primary-700/70 dark:text-primary-300/70">Achievements</span>
+				<span class="text-[7px] text-nes-purple mb-1" style="font-family: 'Press Start 2P', monospace;">TROPHÄEN</span>
+				<span class="text-2xl font-bold text-nes-purple"><AnimatedCounter value={stats.achievements_count} /></span>
 			</div>
 		</Card>
 	</div>
 
-	<div class="mb-3 text-sm text-gray-500 dark:text-gray-400">
-		Diese Woche: <strong class="text-primary-600 dark:text-primary-400">{stats.user.weekly_points} Punkte</strong>
-		&middot; {stats.tasks_completed_this_week} Aufgaben
-		{#if stats.favorite_room}
-			&middot; Lieblingsraum: {stats.favorite_room}
-		{/if}
-	</div>
+	<!-- Weekly Stats -->
+	<Card class="mb-6">
+		<div class="text-sm text-parchment-400 dark:text-crt-green/70">
+			Diese Woche: <strong class="text-nes-gold">{stats.user.weekly_points} XP</strong>
+			&middot; {stats.tasks_completed_this_week} Quests
+			{#if stats.favorite_room}
+				&middot; Lieblingszone: {stats.favorite_room}
+			{/if}
+		</div>
+	</Card>
 
 	<!-- Achievements -->
-	<h2 class="text-lg font-semibold mb-4">Achievements</h2>
+	<h2 class="text-[10px] mb-4" style="font-family: 'Press Start 2P', monospace;">TROPHÄEN-VITRINE</h2>
 	{#if achievements.length === 0}
 		<Card class="text-center py-6">
-			<p class="text-gray-500 dark:text-gray-400">Keine Achievements verfügbar.</p>
+			<p class="text-parchment-400 dark:text-crt-green/60">Keine Achievements verfügbar.</p>
 		</Card>
 	{:else}
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">

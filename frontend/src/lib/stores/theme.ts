@@ -3,7 +3,7 @@ import { browser } from '$app/environment';
 
 function createThemeStore() {
 	const stored = browser ? localStorage.getItem('chorequest_dark_mode') : null;
-	const initial = stored ? JSON.parse(stored) : false;
+	const initial = stored ? JSON.parse(stored) : true;
 	const store = writable<boolean>(initial);
 
 	if (browser) {

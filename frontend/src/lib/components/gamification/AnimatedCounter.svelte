@@ -35,4 +35,4 @@
 	});
 </script>
 
-<span class="tabular-nums {className}">{displayValue}</span>
+<span class="tabular-nums {className}" style="font-family: 'VT323', monospace;">{displayValue}</span>

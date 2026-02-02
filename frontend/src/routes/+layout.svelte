@@ -17,24 +17,20 @@
 	let { children }: Props = $props();
 
 	onMount(() => {
-		// Initialisiere Dark Mode
 		if ($darkMode) {
 			document.documentElement.classList.add('dark');
 		}
 
-		// Lade User-Liste
 		if ($apiKey) {
 			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
 			client.users.list().then((u) => {
 				$users = u;
-			}).catch(() => {
-				// Fehler ignorieren - Einstellungen noch nicht konfiguriert
-			});
+			}).catch(() => {});
 		}
 	});
 </script>
 
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col" class:crt-scanlines={$darkMode}>
 	<Header />
 	<div class="flex flex-1">
 		<Navigation />

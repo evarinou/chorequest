@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { mdiRobotHappy, mdiRefresh, mdiClockOutline, mdiDoor, mdiChevronDown, mdiChevronUp } from '@mdi/js';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import Loading from '$lib/components/shared/Loading.svelte';
 	import { createApiClient, ApiError } from '$lib/api/client';
 	import { apiBaseUrl, apiKey } from '$lib/stores/config';
 	import type { WeeklySummary } from '$lib/api/types';
+	import { mdiRefresh, mdiClockOutline, mdiDoor, mdiChevronDown, mdiChevronUp } from '@mdi/js';
 
 	let latest: WeeklySummary | null = $state(null);
 	let older: WeeklySummary[] = $state([]);
@@ -47,7 +50,7 @@
 				latest = null;
 				older = [];
 			} else {
-				error = e?.detail || 'Fehler beim Laden der Zusammenfassungen';
+				error = e?.detail || 'Fehler beim Laden';
 			}
 		} finally {
 			loading = false;
@@ -61,14 +64,13 @@
 			const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
 			const result = await client.summaries.generate();
 			latest = result.summary;
-			// Liste neu laden für korrekte Sortierung
 			const all = await client.summaries.list(20);
 			if (all.length > 0) {
 				latest = all[0];
 				older = all.slice(1);
 			}
 		} catch (e: any) {
-			error = e?.detail || 'Fehler beim Generieren der Zusammenfassung';
+			error = e?.detail || 'Fehler beim Generieren';
 		} finally {
 			generating = false;
 		}
@@ -81,84 +83,76 @@
 	onMount(loadSummaries);
 </script>
 
+<svelte:head>
+	<title>KI-Bericht - ChoreQuest</title>
+</svelte:head>
+
 <div class="max-w-3xl mx-auto space-y-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-3">
-			<Icon path={mdiRobotHappy} size={28} class="text-primary-600 dark:text-primary-400" />
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Wochen-Zusammenfassung</h1>
-		</div>
-		<button
-			onclick={generate}
-			disabled={generating}
-			class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-		>
-			<Icon path={mdiRefresh} size={18} class={generating ? 'animate-spin' : ''} />
-			{generating ? 'Wird generiert...' : 'Neu generieren'}
-		</button>
+		<h1 class="text-sm">DAS ORAKEL SPRICHT</h1>
+		<Button onclick={generate} disabled={generating}>
+			<Icon path={mdiRefresh} size={16} class={generating ? 'animate-spin' : ''} />
+			{generating ? 'GENERIERT...' : 'NEU GENERIEREN'}
+		</Button>
 	</div>
 
 	{#if error}
-		<div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
+		<Card class="border-nes-red! text-nes-red">
 			{error}
-		</div>
+		</Card>
 	{/if}
 
 	{#if loading}
-		<div class="flex justify-center py-12">
-			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-		</div>
+		<Loading text="DAS ORAKEL DENKT NACH" />
 	{:else if !latest}
-		<!-- Leerzustand -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-			<Icon path={mdiRobotHappy} size={48} class="text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-			<p class="text-gray-500 dark:text-gray-400 text-lg">Noch keine Zusammenfassung vorhanden</p>
-			<p class="text-gray-400 dark:text-gray-500 text-sm mt-2">
-				Klicke auf "Neu generieren" oder warte bis Sonntag um 19:00 Uhr.
+		<Card class="text-center py-8">
+			<div class="text-4xl mb-3">🔮</div>
+			<p class="text-[10px] mb-2" style="font-family: 'Press Start 2P', monospace;">NOCH KEINE PROPHEZEIUNG</p>
+			<p class="text-parchment-400 dark:text-crt-green/60">
+				Klicke auf "NEU GENERIEREN" oder warte bis Sonntag 19:00.
 			</p>
-		</div>
+		</Card>
 	{:else}
 		<!-- Neueste Summary -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-			<div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-				<p class="text-sm font-semibold text-primary-600 dark:text-primary-400">
-					KW {getWeekNumber(latest.week_start)}: {formatDate(latest.week_start)} – {formatDate(latest.week_end)}
-				</p>
+		<Card>
+			<div class="border-b-2 border-[#5a3a1a] dark:border-crt-border pb-2 mb-3">
+				<span class="text-[9px] text-nes-gold" style="font-family: 'Press Start 2P', monospace;">
+					KW {getWeekNumber(latest.week_start)}: {formatDate(latest.week_start)} - {formatDate(latest.week_end)}
+				</span>
 			</div>
-			<div class="px-6 py-5">
-				{#if latest.summary_text}
-					{#each latest.summary_text.split('\n\n') as paragraph}
-						<p class="text-gray-700 dark:text-gray-300 mb-3 last:mb-0 leading-relaxed">{paragraph}</p>
-					{/each}
-				{/if}
-			</div>
-		</div>
+			{#if latest.summary_text}
+				{#each latest.summary_text.split('\n\n') as paragraph}
+					<p class="text-sm mb-3 last:mb-0 leading-relaxed">{paragraph}</p>
+				{/each}
+			{/if}
+		</Card>
 
 		<!-- Vorgeschlagene Aufgaben -->
 		{#if latest.suggested_tasks && latest.suggested_tasks.length > 0}
 			<div>
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Vorgeschlagene Aufgaben</h2>
+				<h2 class="text-[10px] mb-3" style="font-family: 'Press Start 2P', monospace;">VORGESCHLAGENE QUESTS</h2>
 				<div class="grid gap-3">
 					{#each latest.suggested_tasks as task}
-						<div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+						<Card>
 							<div class="flex items-start justify-between gap-3">
 								<div class="flex-1">
-									<h3 class="font-medium text-gray-900 dark:text-white">{task.title}</h3>
-									<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{task.description}</p>
-									<p class="text-xs text-gray-500 dark:text-gray-500 mt-2 italic">{task.reason}</p>
+									<h3 class="text-sm font-bold">{task.title}</h3>
+									<p class="text-sm text-parchment-400 dark:text-crt-green/70 mt-1">{task.description}</p>
+									<p class="text-xs text-parchment-400 dark:text-crt-green/50 mt-2 italic">{task.reason}</p>
 								</div>
 								<div class="flex flex-col items-end gap-1 shrink-0">
-									<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
+									<span class="flex items-center gap-1 text-[7px] text-nes-blue dark:text-crt-green" style="font-family: 'Press Start 2P', monospace;">
 										<Icon path={mdiDoor} size={12} />
 										{task.room_name}
 									</span>
-									<span class="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+									<span class="flex items-center gap-1 text-xs text-parchment-400 dark:text-crt-green/50">
 										<Icon path={mdiClockOutline} size={12} />
 										{task.estimated_minutes} Min.
 									</span>
 								</div>
 							</div>
-						</div>
+						</Card>
 					{/each}
 				</div>
 			</div>
@@ -167,37 +161,37 @@
 		<!-- Ältere Zusammenfassungen -->
 		{#if older.length > 0}
 			<div>
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Frühere Zusammenfassungen</h2>
+				<h2 class="text-[10px] mb-3" style="font-family: 'Press Start 2P', monospace;">ARCHIV</h2>
 				<div class="space-y-2">
 					{#each older as summary (summary.id)}
-						<div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+						<Card>
 							<button
 								onclick={() => toggleExpanded(summary.id)}
-								class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+								class="w-full flex items-center justify-between text-left"
 							>
-								<span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-									KW {getWeekNumber(summary.week_start)}: {formatDate(summary.week_start)} – {formatDate(summary.week_end)}
+								<span class="text-[8px] text-parchment-400 dark:text-crt-green" style="font-family: 'Press Start 2P', monospace;">
+									KW {getWeekNumber(summary.week_start)}: {formatDate(summary.week_start)} - {formatDate(summary.week_end)}
 								</span>
-								<Icon path={expandedId === summary.id ? mdiChevronUp : mdiChevronDown} size={20} class="text-gray-400" />
+								<Icon path={expandedId === summary.id ? mdiChevronUp : mdiChevronDown} size={18} class="text-parchment-400 dark:text-crt-green/50" />
 							</button>
 							{#if expandedId === summary.id}
-								<div class="px-4 pb-4 border-t border-gray-100 dark:border-gray-700 pt-3">
+								<div class="mt-3 pt-3 border-t-2 border-[#5a3a1a] dark:border-crt-border">
 									{#if summary.summary_text}
 										{#each summary.summary_text.split('\n\n') as paragraph}
-											<p class="text-sm text-gray-600 dark:text-gray-400 mb-2 last:mb-0">{paragraph}</p>
+											<p class="text-sm text-parchment-400 dark:text-crt-green/70 mb-2 last:mb-0">{paragraph}</p>
 										{/each}
 									{/if}
 									{#if summary.suggested_tasks && summary.suggested_tasks.length > 0}
-										<div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-											<p class="text-xs font-medium text-gray-500 dark:text-gray-500 mb-2">Vorgeschlagene Aufgaben:</p>
+										<div class="mt-3 pt-2 border-t border-parchment-300 dark:border-crt-border">
+											<p class="text-[7px] text-parchment-400 dark:text-crt-green/50 mb-1" style="font-family: 'Press Start 2P', monospace;">QUESTS:</p>
 											{#each summary.suggested_tasks as task}
-												<p class="text-sm text-gray-600 dark:text-gray-400">• {task.title} ({task.room_name})</p>
+												<p class="text-sm text-parchment-400 dark:text-crt-green/60">- {task.title} ({task.room_name})</p>
 											{/each}
 										</div>
 									{/if}
 								</div>
 							{/if}
-						</div>
+						</Card>
 					{/each}
 				</div>
 			</div>

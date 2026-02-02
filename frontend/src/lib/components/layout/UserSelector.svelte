@@ -1,23 +1,28 @@
 <script lang="ts">
 	import { users, selectedUserId } from '$lib/stores/user';
-	import { mdiAccountCircle } from '@mdi/js';
-	import Icon from '$lib/components/ui/Icon.svelte';
+	import { generatePixelAvatar } from '$lib/utils/pixelAvatar';
 
 	function handleChange(e: Event) {
 		const target = e.target as HTMLSelectElement;
 		const val = target.value;
 		$selectedUserId = val ? Number(val) : null;
 	}
+
+	let avatarSvg = $derived($selectedUserId ? generatePixelAvatar($selectedUserId, 24) : '');
 </script>
 
 <div class="flex items-center gap-2">
-	<Icon path={mdiAccountCircle} size={20} class="text-gray-400" />
+	{#if $selectedUserId}
+		<div class="w-6 h-6 border-2 border-[#5a3a1a] dark:border-crt-green shrink-0">
+			{@html avatarSvg}
+		</div>
+	{/if}
 	<select
 		value={$selectedUserId ?? ''}
 		onchange={handleChange}
-		class="text-sm bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800"
+		class="pixel-input !w-auto !py-1 !px-2 text-sm"
 	>
-		<option value="">Benutzer wählen</option>
+		<option value="">-- Held wählen --</option>
 		{#each $users as user (user.id)}
 			<option value={user.id}>{user.display_name || user.username}</option>
 		{/each}

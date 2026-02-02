@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { mdiFire } from '@mdi/js';
-	import Icon from '$lib/components/ui/Icon.svelte';
-
 	interface Props {
 		streak: number;
 		size?: 'sm' | 'md' | 'lg';
@@ -10,29 +7,27 @@
 	let { streak, size = 'sm' }: Props = $props();
 
 	let colorClass = $derived(
-		streak >= 14 ? 'text-red-500' :
-		streak >= 7 ? 'text-orange-500' :
-		'text-yellow-500'
-	);
-
-	let iconSize = $derived(
-		size === 'lg' ? 28 :
-		size === 'md' ? 22 :
-		16
+		streak >= 14 ? 'text-nes-red' :
+		streak >= 7 ? 'text-nes-orange' :
+		'text-nes-gold'
 	);
 
 	let textSize = $derived(
-		size === 'lg' ? 'text-lg' :
-		size === 'md' ? 'text-sm' :
-		'text-xs'
+		size === 'lg' ? 'text-[12px]' :
+		size === 'md' ? 'text-[9px]' :
+		'text-[7px]'
+	);
+
+	let flameSize = $derived(
+		size === 'lg' ? 'text-2xl' :
+		size === 'md' ? 'text-lg' :
+		'text-sm'
 	);
 </script>
 
 {#if streak > 0}
-	<div class="inline-flex items-center gap-0.5 {colorClass}">
-		<span class="animate-flame inline-block">
-			<Icon path={mdiFire} size={iconSize} />
-		</span>
-		<span class="font-bold {textSize}">{streak}</span>
+	<div class="inline-flex items-center gap-1 {colorClass}" style="font-family: 'Press Start 2P', monospace;">
+		<span class="animate-pixel-flame inline-block {flameSize}">🔥</span>
+		<span class="{textSize}">{streak}</span>
 	</div>
 {/if}

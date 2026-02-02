@@ -6,16 +6,16 @@
 	import type { Room, TaskInstanceWithDetails, ExtendedCompletionResponse } from '$lib/api/types';
 	import Card from '$lib/components/ui/Card.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
-	import Icon from '$lib/components/ui/Icon.svelte';
 	import Loading from '$lib/components/shared/Loading.svelte';
 	import ErrorMessage from '$lib/components/shared/ErrorMessage.svelte';
 	import RoomSection from '$lib/components/dashboard/RoomSection.svelte';
 	import QuickCompleteModal from '$lib/components/dashboard/QuickCompleteModal.svelte';
 	import PointsAnimation from '$lib/components/gamification/PointsAnimation.svelte';
 	import ConfettiEffect from '$lib/components/gamification/ConfettiEffect.svelte';
+	import LevelUpOverlay from '$lib/components/gamification/LevelUpOverlay.svelte';
 	import { showPointsToast, showAchievementToast, showToast } from '$lib/stores/toast';
 	import AnimatedCounter from '$lib/components/gamification/AnimatedCounter.svelte';
-	import { mdiCalendarToday, mdiAlertCircle, mdiStar, mdiPartyPopper } from '@mdi/js';
+	import { getLevelInfo } from '$lib/utils/level';
 
 	let rooms = $state<Room[]>([]);
 	let instances = $state<TaskInstanceWithDetails[]>([]);
@@ -24,13 +24,12 @@
 	let tasksToday = $state(0);
 	let tasksOverdue = $state(0);
 
-	// Complete-Modal
 	let completeModalOpen = $state(false);
 	let selectedInstance = $state<TaskInstanceWithDetails | null>(null);
 
-	// Punkte-Animation + Confetti
 	let pointsAnim = $state<{ points: number; bonus: number } | null>(null);
 	let showConfetti = $state(false);
+	let levelUpData = $state<{ oldLevel: ReturnType<typeof getLevelInfo>; newLevel: ReturnType<typeof getLevelInfo> } | null>(null);
 
 	async function loadData() {
 		if (!$apiKey) {
@@ -68,6 +67,9 @@
 
 	async function handleComplete(instanceId: number, userId: number, notes: string) {
 		const client = createApiClient(fetch, $apiBaseUrl, $apiKey);
+		const currentUser = $selectedUser;
+		const oldLevelInfo = currentUser ? getLevelInfo(currentUser.total_points) : null;
+
 		try {
 			const result: ExtendedCompletionResponse = await client.instances.complete(instanceId, {
 				user_id: userId,
@@ -81,13 +83,24 @@
 				showAchievementToast(ach.name);
 			}
 
-			// Punkte-Animation + Confetti
 			pointsAnim = { points: result.bonus_breakdown.total_points, bonus: result.bonus_breakdown.bonus_points };
 			showConfetti = true;
 			setTimeout(() => { pointsAnim = null; }, 1500);
-			setTimeout(() => { showConfetti = false; }, 2000);
+			setTimeout(() => { showConfetti = false; }, 2500);
 
 			await loadData();
+
+			// Check level up
+			if (oldLevelInfo && currentUser) {
+				const newUser = $selectedUser;
+				if (newUser) {
+					const newLevelInfo = getLevelInfo(newUser.total_points);
+					if (newLevelInfo.level > oldLevelInfo.level) {
+						levelUpData = { oldLevel: oldLevelInfo, newLevel: newLevelInfo };
+						setTimeout(() => { levelUpData = null; }, 3000);
+					}
+				}
+			}
 		} catch (e) {
 			showToast(e instanceof ApiError ? e.detail : 'Fehler beim Erledigen', 'error');
 		}
@@ -95,7 +108,6 @@
 
 	onMount(loadData);
 
-	// Gruppiere Instanzen nach Raum
 	let instancesByRoom = $derived.by(() => {
 		const map = new Map<number, TaskInstanceWithDetails[]>();
 		for (const inst of instances) {
@@ -120,26 +132,24 @@
 {:else}
 	<!-- Stat-Cards -->
 	<div class="grid grid-cols-3 gap-3 mb-6">
-		<Card class="gradient-card-blue border-0">
+		<Card>
 			<div class="flex flex-col items-center text-center">
-				<Icon path={mdiCalendarToday} size={24} class="text-primary-600 dark:text-primary-300 mb-1" />
-				<span class="text-2xl font-bold"><AnimatedCounter value={tasksToday} /></span>
-				<span class="text-xs text-primary-700/70 dark:text-primary-300/70">Heute</span>
+				<span class="text-[8px] text-nes-blue dark:text-crt-green mb-1" style="font-family: 'Press Start 2P', monospace;">TAGES-QUESTS</span>
+				<span class="text-3xl font-bold text-nes-blue dark:text-crt-green"><AnimatedCounter value={tasksToday} /></span>
 			</div>
 		</Card>
-		<Card class="{tasksOverdue > 0 ? 'border-danger-500 animate-pulse-glow-red' : ''}">
+		<Card class="{tasksOverdue > 0 ? 'border-nes-red!' : ''}">
 			<div class="flex flex-col items-center text-center">
-				<Icon path={mdiAlertCircle} size={24} class={tasksOverdue > 0 ? 'text-danger-500' : 'text-gray-400'} />
-				<span class="text-2xl font-bold" class:text-danger-500={tasksOverdue > 0}><AnimatedCounter value={tasksOverdue} /></span>
-				<span class="text-xs text-gray-500 dark:text-gray-400">Überfällig</span>
+				<span class="text-[8px] mb-1 {tasksOverdue > 0 ? 'text-nes-red animate-pixel-blink' : 'text-parchment-400 dark:text-crt-green/60'}" style="font-family: 'Press Start 2P', monospace;">
+					{tasksOverdue > 0 ? 'VERPASST!' : 'VERPASST'}
+				</span>
+				<span class="text-3xl font-bold" class:text-nes-red={tasksOverdue > 0}><AnimatedCounter value={tasksOverdue} /></span>
 			</div>
 		</Card>
-		<Card class="gradient-card-gold border-0 relative overflow-hidden">
-			<div class="absolute inset-0 animate-shimmer pointer-events-none"></div>
-			<div class="flex flex-col items-center text-center relative">
-				<Icon path={mdiStar} size={24} class="text-yellow-600 dark:text-yellow-300 mb-1" />
-				<span class="text-2xl font-bold"><AnimatedCounter value={currentUser?.weekly_points ?? 0} /></span>
-				<span class="text-xs text-yellow-700/70 dark:text-yellow-300/70">Woche</span>
+		<Card class="pixel-border-gold">
+			<div class="flex flex-col items-center text-center">
+				<span class="text-[8px] text-nes-gold mb-1" style="font-family: 'Press Start 2P', monospace;">WOCHEN-XP</span>
+				<span class="text-3xl font-bold text-nes-gold"><AnimatedCounter value={currentUser?.weekly_points ?? 0} /></span>
 			</div>
 		</Card>
 	</div>
@@ -147,9 +157,9 @@
 	<!-- Aufgaben nach Raum -->
 	{#if instances.length === 0}
 		<Card class="text-center py-8">
-			<Icon path={mdiPartyPopper} size={48} class="text-accent-500 mx-auto mb-3" />
-			<p class="text-lg font-semibold mb-1">Alles erledigt!</p>
-			<p class="text-gray-500 dark:text-gray-400">Keine Aufgaben mehr für heute. Genieße den Rest des Tages!</p>
+			<div class="text-4xl mb-3">🎉</div>
+			<p class="text-[10px] mb-2" style="font-family: 'Press Start 2P', monospace;">ALLES ERLEDIGT!</p>
+			<p class="text-parchment-400 dark:text-crt-green/60">Keine Quests mehr für heute.</p>
 		</Card>
 	{:else}
 		{#each rooms.toSorted((a, b) => a.sort_order - b.sort_order) as room (room.id)}
@@ -173,5 +183,9 @@
 
 	{#if showConfetti}
 		<ConfettiEffect />
+	{/if}
+
+	{#if levelUpData}
+		<LevelUpOverlay oldLevel={levelUpData.oldLevel} newLevel={levelUpData.newLevel} />
 	{/if}
 {/if}
