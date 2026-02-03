@@ -131,7 +131,7 @@
 	<ErrorMessage message={error} onretry={loadData} />
 {:else}
 	<!-- Stat-Cards -->
-	<div class="grid grid-cols-3 gap-3 mb-6">
+	<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
 		<Card>
 			<div class="flex flex-col items-center text-center">
 				<span class="text-[8px] text-nes-blue dark:text-crt-green mb-1" style="font-family: 'Press Start 2P', monospace;">TAGES-QUESTS</span>

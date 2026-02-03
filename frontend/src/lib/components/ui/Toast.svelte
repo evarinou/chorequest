@@ -36,7 +36,7 @@
 	};
 </script>
 
-<div class="fixed bottom-20 md:bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+<div class="fixed bottom-20 md:bottom-4 right-4 z-50 flex flex-col gap-2 max-w-[calc(100vw-2rem)] sm:max-w-sm">
 	{#each $toasts as toast (toast.id)}
 		<div class="animate-pixel-slide-in border-3 px-4 py-3 {colorMap[toast.type]} {darkColorMap[toast.type]}">
 			<div class="flex items-center gap-3">

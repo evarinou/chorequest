@@ -78,9 +78,9 @@
 {:else}
 	<!-- Pixel Podium -->
 	{#if users.length >= 2}
-		<div class="flex items-end justify-center gap-3 mb-8 px-4">
+		<div class="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-3 mb-8 px-4">
 			<!-- Platz 2 -->
-			<a href="/profil/{users[1].id}" class="flex flex-col items-center flex-1 max-w-[130px]">
+			<a href="/profil/{users[1].id}" class="flex flex-col items-center w-full sm:flex-1 sm:max-w-[130px] order-2 sm:order-1">
 				<div class="w-10 h-10 border-2 border-[#5a3a1a] dark:border-crt-green mb-1">
 					{@html generatePixelAvatar(users[1].id, 40)}
 				</div>
@@ -97,7 +97,7 @@
 			</a>
 
 			<!-- Platz 1 -->
-			<a href="/profil/{users[0].id}" class="flex flex-col items-center flex-1 max-w-[140px]">
+			<a href="/profil/{users[0].id}" class="flex flex-col items-center w-full sm:flex-1 sm:max-w-[140px] order-1 sm:order-2">
 				<div class="text-2xl mb-1 animate-pixel-bounce">👑</div>
 				<div class="w-12 h-12 border-3 border-nes-gold mb-1">
 					{@html generatePixelAvatar(users[0].id, 48)}
@@ -117,7 +117,7 @@
 
 			<!-- Platz 3 -->
 			{#if users.length >= 3}
-				<a href="/profil/{users[2].id}" class="flex flex-col items-center flex-1 max-w-[130px]">
+				<a href="/profil/{users[2].id}" class="flex flex-col items-center w-full sm:flex-1 sm:max-w-[130px] order-3">
 					<div class="w-10 h-10 border-2 border-[#5a3a1a] dark:border-crt-green mb-1">
 						{@html generatePixelAvatar(users[2].id, 40)}
 					</div>

@@ -54,7 +54,7 @@
 	<ErrorMessage message={error} onretry={loadData} />
 {:else if stats && levelInfo}
 	<!-- Character Header -->
-	<div class="flex items-center gap-4 mb-6">
+	<div class="flex flex-col items-center sm:flex-row sm:items-center gap-4 mb-6">
 		<div class="w-16 h-16 border-3 border-nes-gold shrink-0">
 			{@html avatarSvg}
 		</div>
@@ -71,7 +71,7 @@
 	</div>
 
 	<!-- Stat Boxes -->
-	<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-8">
 		<Card class="pixel-border-gold">
 			<div class="flex flex-col items-center text-center">
 				<span class="text-[7px] text-nes-gold mb-1" style="font-family: 'Press Start 2P', monospace;">GESAMT-XP</span>

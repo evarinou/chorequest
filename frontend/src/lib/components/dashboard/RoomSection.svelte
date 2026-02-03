@@ -22,11 +22,11 @@
 		class="w-full text-left"
 	>
 		<div class="flex items-center gap-2 py-2">
-			<span class="text-parchment-400 dark:text-crt-green/50">=====</span>
-			<span class="text-[10px] text-parchment-400 dark:text-crt-green" style="font-family: 'Press Start 2P', monospace;">
+			<span class="flex-1 h-[2px] bg-parchment-400 dark:bg-crt-green/50"></span>
+			<span class="text-[10px] text-parchment-400 dark:text-crt-green shrink-0" style="font-family: 'Press Start 2P', monospace;">
 				[ {room.name.toUpperCase()} ]
 			</span>
-			<span class="text-parchment-400 dark:text-crt-green/50 flex-1">=====</span>
+			<span class="flex-1 h-[2px] bg-parchment-400 dark:bg-crt-green/50"></span>
 			{#if pendingCount > 0}
 				<Badge variant="points">{pendingCount}</Badge>
 			{/if}

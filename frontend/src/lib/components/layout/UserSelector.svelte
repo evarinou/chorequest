@@ -20,7 +20,7 @@
 	<select
 		value={$selectedUserId ?? ''}
 		onchange={handleChange}
-		class="pixel-input !w-auto !py-1 !px-2 text-sm"
+		class="pixel-input !py-1 !px-2 text-sm max-w-[120px] sm:max-w-none truncate"
 	>
 		<option value="">-- Held wählen --</option>
 		{#each $users as user (user.id)}

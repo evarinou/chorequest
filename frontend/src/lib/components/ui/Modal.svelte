@@ -22,7 +22,7 @@
 {#if open}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:p-4"
 		role="dialog"
 		aria-modal="true"
 		onkeydown={handleKeydown}
@@ -43,14 +43,14 @@
 						<button
 							onclick={onclose}
 							aria-label="Schließen"
-							class="text-white/70 hover:text-white dark:text-crt-green/70 dark:hover:text-crt-green text-[10px]"
+							class="text-white/70 hover:text-white dark:text-crt-green/70 dark:hover:text-crt-green text-[10px] min-w-[32px] min-h-[32px] flex items-center justify-center"
 							style="font-family: 'Press Start 2P', monospace;"
 						>
 							X
 						</button>
 					</div>
 				{/if}
-				<div class="p-4">
+				<div class="p-3 md:p-4">
 					{@render children()}
 				</div>
 			</div>

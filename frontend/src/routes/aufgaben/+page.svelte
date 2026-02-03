@@ -98,7 +98,7 @@
 			<select
 				id="filter-room"
 				bind:value={filterRoom}
-				class="pixel-input !w-auto"
+				class="pixel-input w-full sm:w-auto"
 			>
 				<option value={null}>Alle Zonen</option>
 				{#each rooms as room (room.id)}
@@ -111,7 +111,7 @@
 			<select
 				id="filter-active"
 				bind:value={filterActive}
-				class="pixel-input !w-auto"
+				class="pixel-input w-full sm:w-auto"
 			>
 				<option value={null}>Alle</option>
 				<option value={true}>Aktiv</option>
@@ -153,13 +153,13 @@
 				<div class="flex items-center gap-1">
 					<a
 						href="/aufgaben/{task.id}"
-						class="p-2 text-parchment-400 hover:text-nes-gold dark:text-crt-green/60 dark:hover:text-crt-green"
+						class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-parchment-400 hover:text-nes-gold dark:text-crt-green/60 dark:hover:text-crt-green"
 					>
 						<Icon path={mdiPencil} size={18} />
 					</a>
 					<button
 						onclick={() => deleteTask(task.id)}
-						class="p-2 text-parchment-400 hover:text-nes-red dark:text-crt-green/60 dark:hover:text-nes-red"
+						class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-parchment-400 hover:text-nes-red dark:text-crt-green/60 dark:hover:text-nes-red"
 					>
 						<Icon path={mdiDelete} size={18} />
 					</button>

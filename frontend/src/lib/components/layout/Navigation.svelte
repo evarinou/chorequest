@@ -23,7 +23,7 @@
 		{#each navItems as item (item.href)}
 			<a
 				href={item.href}
-				class="flex flex-col items-center py-2 px-2 text-[7px] transition-colors relative {isActive(item.href) ? 'text-nes-green dark:text-crt-green' : 'text-parchment-400 dark:text-crt-green/50'}"
+				class="flex flex-col items-center py-3 px-1 text-[7px] transition-colors relative min-h-[44px] {isActive(item.href) ? 'text-nes-green dark:text-crt-green' : 'text-parchment-400 dark:text-crt-green/50'}"
 				style="font-family: 'Press Start 2P', monospace;"
 			>
 				{#if isActive(item.href)}

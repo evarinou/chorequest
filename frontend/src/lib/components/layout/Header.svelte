@@ -14,9 +14,12 @@
 <header class="sticky top-0 z-40 border-b-3 border-b-[#5a3a1a] dark:border-b-crt-green bg-parchment-100 dark:bg-crt-bg">
 	<div class="max-w-5xl mx-auto flex items-center justify-between px-4 h-14">
 		<!-- Logo -->
-		<a href="/" class="flex items-center gap-2">
-			<span class="text-[10px] text-nes-green dark:text-crt-green" style="font-family: 'Press Start 2P', monospace;">
+		<a href="/" class="flex items-center gap-2 shrink-0">
+			<span class="text-[10px] text-nes-green dark:text-crt-green hidden sm:inline" style="font-family: 'Press Start 2P', monospace;">
 				ChoreQuest
+			</span>
+			<span class="text-[10px] text-nes-green dark:text-crt-green sm:hidden" style="font-family: 'Press Start 2P', monospace;">
+				CQ
 			</span>
 		</a>
 

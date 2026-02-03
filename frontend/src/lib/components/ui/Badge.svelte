@@ -19,7 +19,7 @@
 </script>
 
 <span
-	class="inline-flex items-center px-2 py-0.5 text-xs border-2 font-[Press_Start_2P] text-[7px] leading-relaxed {variantClasses[variant]} {className}"
+	class="inline-flex items-center px-2 py-0.5 text-xs border-2 font-[Press_Start_2P] text-[7px] leading-relaxed whitespace-nowrap {variantClasses[variant]} {className}"
 	style="font-family: 'Press Start 2P', monospace;"
 >
 	{@render children()}
