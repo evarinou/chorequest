@@ -12,8 +12,10 @@
 
 	let { instance, oncomplete }: Props = $props();
 
+	let today = $derived(new Date().toLocaleDateString('sv-SE'));
 	let isCompleted = $derived(instance.status === 'completed');
 	let isSkipped = $derived(instance.status === 'skipped');
+	let isOverdue = $derived(instance.status === 'pending' && !!instance.due_date && instance.due_date < today);
 	let isHighValue = $derived(instance.task.base_points >= 15);
 
 	let difficultyStars = $derived(
@@ -21,10 +23,16 @@
 		instance.task.base_points >= 10 ? '★★' :
 		'★'
 	);
+
+	let formattedDueDate = $derived.by(() => {
+		if (!isOverdue) return '';
+		const [, m, d] = instance.due_date.split('-');
+		return `${d}.${m}.`;
+	});
 </script>
 
 <div
-	class="flex items-center gap-3 p-3 pixel-border bg-parchment-50 dark:bg-crt-panel transition-colors {isCompleted || isSkipped ? 'opacity-50' : 'hover:bg-parchment-200 dark:hover:bg-crt-dark-green cursor-pointer'} {isHighValue && !isCompleted && !isSkipped ? 'border-nes-gold!' : ''}"
+	class="flex items-center gap-3 p-3 pixel-border bg-parchment-50 dark:bg-crt-panel transition-colors {isCompleted || isSkipped ? 'opacity-50' : 'hover:bg-parchment-200 dark:hover:bg-crt-dark-green cursor-pointer'} {isHighValue && !isCompleted && !isSkipped && !isOverdue ? 'border-nes-gold!' : ''} {isOverdue ? 'border-l-4 border-l-nes-red' : ''}"
 >
 	{#if isCompleted}
 		<div class="shrink-0 text-nes-green dark:text-crt-green text-xl">✓</div>
@@ -39,9 +47,15 @@
 			<span class="text-sm truncate {isCompleted ? 'line-through' : ''}">
 				{instance.task.title}
 			</span>
+			{#if isOverdue}
+				<Badge variant="danger">VERPASST</Badge>
+			{/if}
 		</div>
 		<div class="flex items-center gap-3 mt-1 text-xs text-parchment-400 dark:text-crt-green/60">
 			<Badge variant="points">{instance.task.base_points} XP</Badge>
+			{#if isOverdue}
+				<span class="text-nes-red">Fällig: {formattedDueDate}</span>
+			{/if}
 			{#if instance.task.estimated_minutes}
 				<span class="flex items-center gap-1">
 					<Icon path={mdiClock} size={12} />

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -119,9 +119,15 @@ async def list_today_instances(db: AsyncSession = Depends(get_db)):
             selectinload(TaskInstance.task),
             selectinload(TaskInstance.assigned_user),
         )
-        .where(TaskInstance.due_date == today)
-        .where(TaskInstance.status == "pending")
-        .order_by(TaskInstance.id)
+        .where(
+            or_(
+                # Alle heutigen Instanzen (jeder Status)
+                TaskInstance.due_date == today,
+                # Überfällige offene Instanzen
+                (TaskInstance.due_date < today) & (TaskInstance.status == "pending"),
+            )
+        )
+        .order_by(TaskInstance.due_date, TaskInstance.id)
     )
     result = await db.execute(query)
     return result.scalars().all()

@@ -13,7 +13,9 @@
 	let { room, instances, oncomplete }: Props = $props();
 	let expanded = $state(true);
 
+	let today = new Date().toLocaleDateString('sv-SE');
 	let pendingCount = $derived(instances.filter((i) => i.status === 'pending').length);
+	let overdueCount = $derived(instances.filter((i) => i.status === 'pending' && i.due_date && i.due_date < today).length);
 </script>
 
 <div class="mb-4">
@@ -27,6 +29,9 @@
 				[ {room.name.toUpperCase()} ]
 			</span>
 			<span class="flex-1 h-[2px] bg-parchment-400 dark:bg-crt-green/50"></span>
+			{#if overdueCount > 0}
+				<Badge variant="danger">{overdueCount} VERPASST</Badge>
+			{/if}
 			{#if pendingCount > 0}
 				<Badge variant="points">{pendingCount}</Badge>
 			{/if}

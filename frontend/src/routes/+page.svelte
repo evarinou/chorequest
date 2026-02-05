@@ -108,9 +108,23 @@
 
 	onMount(loadData);
 
+	let today = $derived(new Date().toLocaleDateString('sv-SE'));
+
+	let allPending = $derived(instances.filter((i) => i.status === 'pending'));
+
+	let sortedInstances = $derived.by(() => {
+		const statusOrder = (i: TaskInstanceWithDetails) => {
+			if (i.status === 'pending' && i.due_date && i.due_date < today) return 0; // überfällig pending
+			if (i.status === 'pending') return 1; // heute pending
+			if (i.status === 'completed') return 2;
+			return 3; // skipped
+		};
+		return [...instances].sort((a, b) => statusOrder(a) - statusOrder(b) || a.id - b.id);
+	});
+
 	let instancesByRoom = $derived.by(() => {
 		const map = new Map<number, TaskInstanceWithDetails[]>();
-		for (const inst of instances) {
+		for (const inst of sortedInstances) {
 			const roomId = inst.task.room_id;
 			if (!map.has(roomId)) map.set(roomId, []);
 			map.get(roomId)!.push(inst);
@@ -155,20 +169,20 @@
 	</div>
 
 	<!-- Aufgaben nach Raum -->
-	{#if instances.length === 0}
+	{#if allPending.length === 0}
 		<Card class="text-center py-8">
 			<div class="text-4xl mb-3">🎉</div>
 			<p class="text-[10px] mb-2" style="font-family: 'Press Start 2P', monospace;">ALLES ERLEDIGT!</p>
 			<p class="text-parchment-400 dark:text-crt-green/60">Keine Quests mehr für heute.</p>
 		</Card>
-	{:else}
-		{#each rooms.toSorted((a, b) => a.sort_order - b.sort_order) as room (room.id)}
-			{@const roomInstances = instancesByRoom.get(room.id) ?? []}
-			{#if roomInstances.length > 0}
-				<RoomSection {room} instances={roomInstances} oncomplete={openComplete} />
-			{/if}
-		{/each}
 	{/if}
+
+	{#each rooms.toSorted((a, b) => a.sort_order - b.sort_order) as room (room.id)}
+		{@const roomInstances = instancesByRoom.get(room.id) ?? []}
+		{#if roomInstances.length > 0}
+			<RoomSection {room} instances={roomInstances} oncomplete={openComplete} />
+		{/if}
+	{/each}
 
 	<QuickCompleteModal
 		open={completeModalOpen}
